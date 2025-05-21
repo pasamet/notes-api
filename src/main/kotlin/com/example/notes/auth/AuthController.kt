@@ -1,5 +1,6 @@
 package com.example.notes.auth
 
+import com.example.notes.user.UserService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -8,7 +9,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.Authentication
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -25,32 +25,25 @@ private val log: Logger =
 )
 class AuthController(
     private val tokenService: TokenService,
-    private val passwordEncoder: PasswordEncoder,
-    private val jpaUserDetailsService: JpaUserDetailsService,
+    private val userService: UserService,
 ) {
     @PostMapping("/token")
     @Operation(
         summary = "Update registration detail",
     )
     @SecurityRequirement(name = "basicAuth")
-    fun token(authentication: Authentication): String? {
-        log.debug("Token requested for user: '{}'", authentication.name)
-        val token = tokenService.generateToken(authentication)
-        log.debug("Token granted: {}", token)
-        return token
-    }
+    fun token(authentication: Authentication): String? = tokenService.generateToken(authentication)
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     fun register(
-        @RequestBody newUser: NewUser,
-    ): HttpStatus {
-        jpaUserDetailsService.createUser(
+        @RequestBody @ValidPassword newUser: NewUser,
+    ) {
+        userService.createUser(
             username = newUser.username,
-            password = passwordEncoder.encode(newUser.password),
+            password = newUser.password,
             name = newUser.name,
         )
-        return HttpStatus.CREATED
     }
 }
 

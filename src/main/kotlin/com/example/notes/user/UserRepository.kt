@@ -13,17 +13,14 @@ interface UserRepository : CrudRepository<User, Long> {
 
 @Entity
 @Table(name = "users")
-class User {
+class User(
     @jakarta.persistence.Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null
-
+    var id: Long? = null,
     @Column(nullable = false)
-    var username: String = ""
-
+    val username: String,
     @Column(nullable = false)
-    var password: String = ""
-
+    val password: String,
     @Column(nullable = false)
-    var name: String = ""
-}
+    val name: String,
+)

@@ -1,5 +1,6 @@
 package com.example.notes.auth
 
+import com.example.notes.user.UserService
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import org.junit.jupiter.api.Test
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 
 private const val USERNAME = "user1"
-private const val PASSWORD = "pass1"
+private const val PASSWORD = "!Pass12345"
 private const val RESOURCE_PATH = "/mock-authenticated-resource"
 
 @RestController
@@ -43,6 +44,9 @@ internal class AuthControllerTest {
     @MockkBean
     lateinit var jpaUserDetailsService: JpaUserDetailsService
 
+    @MockkBean
+    lateinit var userService: UserService
+
     @Test
     fun `When no token is set Then response status is unauthorized`() {
         mvc.get(RESOURCE_PATH).andExpect {
@@ -65,7 +69,7 @@ internal class AuthControllerTest {
                         .with(httpBasic(USERNAME, PASSWORD)),
                 ).andExpect(status().isOk())
                 .andReturn()
-        val token = result.getResponse().getContentAsString()
+        val token = result.response.contentAsString
 
         mvc
             .get(RESOURCE_PATH) {

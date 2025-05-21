@@ -1,34 +1,21 @@
 package com.example.notes.auth
 
-import com.example.notes.user.User
 import com.example.notes.user.UserRepository
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class JpaUserDetailsService(
     private val userRepository: UserRepository,
 ) : UserDetailsService {
+    @Transactional(readOnly = true)
     override fun loadUserByUsername(username: String): UserDetails? {
         return userRepository
-            .findByUsername(username.orEmpty())
+            .findByUsername(username)
             ?.let { return UserDetailsImpl(it.username, it.password) }
-    }
-
-    fun createUser(
-        username: String,
-        password: String,
-        name: String,
-    ) {
-        userRepository.save(
-            User().also {
-                it.password = password
-                it.username = username
-                it.name = name
-            },
-        )
     }
 }
 
