@@ -29,12 +29,15 @@ class AuthController(
 ) {
     @PostMapping("/token")
     @Operation(
-        summary = "Update registration detail",
+        summary = "Provides JWT token",
     )
     @SecurityRequirement(name = "basicAuth")
     fun token(authentication: Authentication): String? = tokenService.generateToken(authentication)
 
     @PostMapping("/register")
+    @Operation(
+        summary = "Registers a new user",
+    )
     @ResponseStatus(HttpStatus.CREATED)
     fun register(
         @RequestBody @ValidPassword newUser: NewUser,

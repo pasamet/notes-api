@@ -42,6 +42,7 @@ To generate a new pair of certificates, (eg for deployment):
 ```bash
 ./script/create_certs.sh
 ```
+Tokens expire in 1 hour.
 
 ## Performance considerations
 Following to requirement:
